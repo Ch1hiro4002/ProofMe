@@ -1,29 +1,9 @@
-"use client"
-
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
-import { useCurrentWallet, useCurrentAccount } from "@mysten/dapp-kit"
-import { ConnectButton } from "@mysten/dapp-kit"
+import { useCurrentWallet, ConnectButton } from "@mysten/dapp-kit"
 import { useSuiResume } from "../hooks/useSuiResume"
 
 // Icons
-const SearchIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <circle cx="11" cy="11" r="8"></circle>
-    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-  </svg>
-)
-
 const PlusIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -88,8 +68,7 @@ const SkeletonCard = () => (
 
 const HomePage = () => {
   const { connectionStatus } = useCurrentWallet()
-  const account = useCurrentAccount()
-  const { loading, allResumes, hasResume } = useSuiResume()
+  const { loading, allResumes } = useSuiResume()
   const navigate = useNavigate()
   const [searchTerm, setSearchTerm] = useState("")
 
@@ -114,20 +93,14 @@ const HomePage = () => {
       <header className="header">
         <div className="container">
           <div className="header-content">
-            <h1 className="logo">Sui简历系统</h1>
+            <h1 className="logo">ProofMe</h1>
             <div className="flex items-center gap-4">
               <button className="btn btn-outline" onClick={handleCreateResume}>
                 <PlusIcon />
-                <span>{hasResume ? "编辑简历" : "创建简历"}</span>
+                <span>{1 ? "编辑简历" : "创建简历"}</span>
               </button>
-              <div className="wallet-connect-wrapper">
-                <ConnectButton />
-              </div>
-              {connectionStatus === "connected" && account && (
-                <div className="text-sm">
-                  已连接: {account.address.slice(0, 6)}...{account.address.slice(-4)}
-                </div>
-              )}
+
+              <ConnectButton className="btn btn-primary" />
             </div>
           </div>
         </div>
@@ -140,9 +113,6 @@ const HomePage = () => {
             <p className="text-gray-600 mb-6">在区块链上安全存储您的职业档案，完全由您控制，永久保存且防篡改</p>
             <div className="flex max-w-md mx-auto">
               <div className="relative flex-1">
-                <div className="absolute left-2 top-2 text-gray-500">
-                  <SearchIcon />
-                </div>
                 <input
                   type="search"
                   placeholder="搜索技能、职位或姓名..."
@@ -264,7 +234,7 @@ const HomePage = () => {
                 </li>
                 <li>
                   <a
-                    href="https://docs.sui.io/guides/developer/first-app"
+                    href="https://docs.sui.io/references"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-1"
@@ -275,7 +245,7 @@ const HomePage = () => {
                 </li>
                 <li>
                   <a
-                    href="https://github.com/"
+                    href="https://github.com/Ch1hiro4002/ProofMe"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-1"

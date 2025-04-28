@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import HomePage from "./pages/HomePage"
 import ProfilePage from "./pages/ProfilePage"
 import CreateResumePage from "./pages/CreateResumePage"
+import "@mysten/dapp-kit/dist/index.css";
+import "@radix-ui/themes/styles.css";
 
 const queryClient = new QueryClient();
 
@@ -12,7 +14,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <SuiClientProvider networks={networkConfig} defaultNetwork="testnet">
-        <WalletProvider autoConnect>
+        <WalletProvider>
           <Router>
             <Routes>
               <Route path="/" element={<HomePage />} />
