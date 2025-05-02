@@ -1,7 +1,7 @@
 // ProfilePage.tsx
 import { useState, useEffect } from "react"
 import { Link, useParams } from "react-router-dom"
-import { client } from "../networkConfig"
+import { suiClient } from "../networkConfig"
 
 // Icons
 const ArrowLeftIcon = () => (
@@ -120,7 +120,7 @@ const ProfilePage = () => {
         setLoading(true)
 
         // Get the resume object from Sui
-        const { data: resumeObject } = await client.getObject({
+        const { data: resumeObject } = await suiClient.getObject({
           id: id || "",
           options: {
             showContent: true,

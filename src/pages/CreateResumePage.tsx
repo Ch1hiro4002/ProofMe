@@ -1,9 +1,10 @@
 // CreateResumePage.tsx
-import type React from "react"
+import React from "react"
 import { useState, useEffect, useRef } from "react"
 import { useNavigate } from "react-router-dom"
 import { useCurrentWallet } from "@mysten/dapp-kit"
 import { useSuiResume } from "../hooks/useSuiResume"
+import { uploadFileToWalrus } from "../services/walrusService"
 
 // Icons
 const PlusIcon = () => (
@@ -155,19 +156,15 @@ const CreateResumePage = () => {
     reader.readAsDataURL(file)
   }
 
-  // 上传头像到Walrus存储
+  // Update the uploadAvatarToWalrus function
   const uploadAvatarToWalrus = async (file: File): Promise<string> => {
     try {
-      // 模拟上传到Walrus存储
-      // 实际实现中，您需要调用Walrus API
-      console.log("上传头像到Walrus存储:", file)
+      // Upload the file to Walrus storage
+      // Store for 10 epochs, non-deletable for data persistence
+      const walrusUrl = await uploadFileToWalrus(file, false, 10)
 
-      // 模拟上传延迟
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-
-      // 返回模拟的URL
-      // 实际实现中，这应该是Walrus返回的URL
-      return `https://walrus.storage/${Date.now()}-${file.name}`
+      console.log("Avatar uploaded to Walrus:", walrusUrl)
+      return walrusUrl
     } catch (error) {
       console.error("上传头像失败:", error)
       throw new Error("上传头像失败，请重试")
@@ -410,7 +407,7 @@ const CreateResumePage = () => {
                         name="name"
                         value={basicInfo.name}
                         onChange={handleBasicInfoChange}
-                        className="w-full p-2 border rounded"
+                        className="w-full p-3 border rounded"
                         required
                       />
                     </div>

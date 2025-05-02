@@ -2,6 +2,8 @@ import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { useCurrentWallet, ConnectButton } from "@mysten/dapp-kit"
 import { useSuiResume } from "../hooks/useSuiResume"
+import "@mysten/dapp-kit/dist/index.css";
+import "@radix-ui/themes/styles.css";
 
 // Icons
 const PlusIcon = () => (
@@ -68,7 +70,7 @@ const SkeletonCard = () => (
 
 const HomePage = () => {
   const { connectionStatus } = useCurrentWallet()
-  const { loading, allResumes } = useSuiResume()
+  const { loading, allResumes, hasResume } = useSuiResume()
   const navigate = useNavigate()
   const [searchTerm, setSearchTerm] = useState("")
 
@@ -97,7 +99,7 @@ const HomePage = () => {
             <div className="flex items-center gap-4">
               <button className="btn btn-outline" onClick={handleCreateResume}>
                 <PlusIcon />
-                <span>{1 ? "编辑简历" : "创建简历"}</span>
+                <span>{hasResume ? "编辑简历" : "创建简历"}</span>
               </button>
 
               <ConnectButton className="btn btn-primary" />

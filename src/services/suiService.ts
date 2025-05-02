@@ -1,20 +1,20 @@
 import { Transaction } from "@mysten/sui/transactions"
 import { useSignAndExecuteTransaction } from "@mysten/dapp-kit";
-import { client } from "../networkConfig"
+import { networkConfig, suiClient } from "../networkConfig"
 
 // Contract address and module name from the deployed Move contract
-const PACKAGE_ID = "0x123456789" // Replace with your actual package ID
+const PACKAGE_ID = networkConfig.testnet.package 
 const MODULE_NAME = "resume"
-const RESUME_MANAGER_ID = "0xabcdef" // Replace with your actual ResumeManager object ID
+const RESUME_MANAGER_ID = networkConfig.testnet.ResumeManager
 
 // Type definitions matching the Move contract structure
 export interface ResumeBasicInfo {
   name: string
   avatarUrl: string
-  date: string // birthdate
+  date: string 
   education: string
   mail: string
-  number: string // phone number
+  number: string 
 }
 
 export interface Resume {
@@ -39,7 +39,7 @@ export interface Resume {
 export async function checkUserHasResume(address: string): Promise<boolean> {
   try {
     // Query owned objects of type Resume
-    const { data: objects } = await client.getOwnedObjects({
+    const { data: objects } = await suiClient.getOwnedObjects({
       owner: address,
       filter: {
         StructType: `${PACKAGE_ID}::${MODULE_NAME}::Resume`,
@@ -64,7 +64,7 @@ export async function checkUserHasResume(address: string): Promise<boolean> {
 export async function getUserResume(address: string): Promise<Resume | null> {
   try {
     // Query owned objects of type Resume
-    const { data: objects } = await client.getOwnedObjects({
+    const { data: objects } = await suiClient.getOwnedObjects({
       owner: address,
       filter: {
         StructType: `${PACKAGE_ID}::${MODULE_NAME}::Resume`,
@@ -127,7 +127,7 @@ function parseOptionVector(field: any): string[] | null {
 export async function getAllResumes(): Promise<Resume[]> {
   try {
     // Get all objects owned by the ResumeManager
-    const { data: objects } = await client.getDynamicFields({
+    const { data: objects } = await suiClient.getDynamicFields({
       parentId: RESUME_MANAGER_ID,
     })
 
@@ -136,7 +136,7 @@ export async function getAllResumes(): Promise<Resume[]> {
     // Fetch each resume object
     for (const obj of objects) {
       try {
-        const { data: resumeObject } = await client.getObject({
+        const { data: resumeObject } = await suiClient.getObject({
           id: obj.objectId,
           options: {
             showContent: true,
