@@ -9,7 +9,6 @@ export type SuiNetworkType = 'mainnet' | 'testnet' | 'devnet';
 export const WALRUS_AGGREGATOR_URLS: Record<string, string> = {
   mainnet: 'https://walrus.globalstake.io/v1/blobs/by-object-id/',
   testnet: 'https://aggregator.walrus-testnet.walrus.space/v1/blobs/by-object-id/',
-  devnet: 'https://aggregator.walrus-testnet.walrus.space/v1/blobs/by-object-id/'
 };
 
 /**

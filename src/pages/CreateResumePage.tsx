@@ -157,19 +157,18 @@ const CreateResumePage = () => {
   }
 
   // Update the uploadAvatarToWalrus function
-  const uploadAvatarToWalrus = async (file: File): Promise<string> => {
-    try {
-      // Upload the file to Walrus storage
-      // Store for 10 epochs, non-deletable for data persistence
-      const walrusUrl = await uploadFileToWalrus(file, false, 10)
-
-      console.log("Avatar uploaded to Walrus:", walrusUrl)
-      return walrusUrl
-    } catch (error) {
-      console.error("上传头像失败:", error)
-      throw new Error("上传头像失败，请重试")
-    }
+// 在 CreateResumePage.tsx 中
+const uploadAvatarToWalrus = async (file: File): Promise<string> => {
+  try {
+    // 使用修改后的 walrusService 上传文件
+    const walrusUrl = await uploadFileToWalrus(file, false, 10);
+    console.log("Avatar uploaded to Walrus:", walrusUrl);
+    return walrusUrl;
+  } catch (error) {
+    console.error("上传头像失败:", error);
+    throw new Error("上传头像失败，请重试");
   }
+};
 
   // 创建简历
   const handleCreateResume = async (e: React.FormEvent) => {

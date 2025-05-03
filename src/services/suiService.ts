@@ -1,27 +1,33 @@
+/**
+ * Sui Blockchain Service
+ *
+ * This service provides functions to interact with the Sui blockchain
+ * specifically for the resume system contract.
+ */
+
 import { Transaction } from "@mysten/sui/transactions"
-import { useSignAndExecuteTransaction } from "@mysten/dapp-kit";
 import { networkConfig, suiClient } from "../networkConfig"
 
 // Contract address and module name from the deployed Move contract
-const PACKAGE_ID = networkConfig.testnet.package 
+const PACKAGE_ID = networkConfig.testnet.package
 const MODULE_NAME = "resume"
 const RESUME_MANAGER_ID = networkConfig.testnet.ResumeManager
 
 // Type definitions matching the Move contract structure
 export interface ResumeBasicInfo {
   name: string
-  avatarUrl: string
-  date: string 
+  avatarUrl?: string
+  date: string
   education: string
   mail: string
-  number: string 
+  number: string
 }
 
 export interface Resume {
   id: string
   owner: string
   name: string
-  avatarUrl: string
+  avatarUrl?: string
   date: string
   education: string
   mail: string
@@ -92,7 +98,6 @@ export async function getUserResume(address: string): Promise<Resume | null> {
       id: resumeObject.data?.objectId || "",
       owner: address,
       name: content.fields.name || "",
-      avatarUrl: content.fields.avatar_url || "",
       date: content.fields.date || "",
       education: content.fields.education || "",
       mail: content.fields.mail || "",
@@ -153,7 +158,6 @@ export async function getAllResumes(): Promise<Resume[]> {
               id: resumeObject.objectId,
               owner: fields.owner,
               name: fields.name,
-              avatarUrl: fields.avatar_url,
               date: fields.date,
               education: fields.education,
               mail: fields.mail,
@@ -180,162 +184,82 @@ export async function getAllResumes(): Promise<Resume[]> {
 }
 
 /**
- * Create a new resume
- * @param signer Wallet signer
+ * Create a transaction for creating a new resume
  * @param resumeInfo Basic resume information
- * @returns Transaction response
+ * @returns Transaction object
  */
-export async function createResume(resumeInfo: ResumeBasicInfo) {
-  try {
-    const tx = new Transaction()
+export function createResumeTransaction(resumeInfo: ResumeBasicInfo): Transaction {
+  const tx = new Transaction()
 
-    // Call the create_resume function in the Move contract
-    tx.moveCall({
-      target: `${PACKAGE_ID}::${MODULE_NAME}::create_resume`,
-      arguments: [
-        tx.object(RESUME_MANAGER_ID), 
-        tx.pure.string(resumeInfo.name),
-        tx.pure.string(resumeInfo.avatarUrl),
-        tx.pure.string(resumeInfo.date),
-        tx.pure.string(resumeInfo.education),
-        tx.pure.string(resumeInfo.mail),
-        tx.pure.string(resumeInfo.number),
-      ],
-    })
+  // Call the create_resume function in the Move contract
+  // 注意：已移除 avatarUrl 参数
+  tx.moveCall({
+    target: `${PACKAGE_ID}::${MODULE_NAME}::create_resume`,
+    arguments: [
+      tx.object(RESUME_MANAGER_ID),
+      tx.pure.string(resumeInfo.name),
+      // 移除 avatarUrl 参数
+      // tx.pure.string(resumeInfo.avatarUrl || ""),
+      tx.pure.string(resumeInfo.date),
+      tx.pure.string(resumeInfo.education),
+      tx.pure.string(resumeInfo.mail),
+      tx.pure.string(resumeInfo.number),
+    ],
+  })
 
-    // Execute the transaction
-    const {mutate: signAndExecute} = useSignAndExecuteTransaction();
-    const result = await signAndExecute({
-      transaction: tx
-    }, {
-      onSuccess: () => {
-        console.log("success!");
-      },
-      onError: (error) => {
-        console.log(error);
-      }
-    })
-
-    return result
-  } catch (error) {
-    console.error("Error creating resume:", error)
-    throw error
-  }
+  return tx
 }
 
 /**
- * Add ability to resume
- * @param signer Wallet signer
+ * Create a transaction for adding ability to resume
  * @param resumeId Resume object ID
  * @param ability Ability string
- * @returns Transaction response
+ * @returns Transaction object
  */
-export async function addAbility(resumeId: string, ability: string) {
-  try {
-    const tx = new Transaction()
+export function addAbilityTransaction(resumeId: string, ability: string): Transaction {
+  const tx = new Transaction()
 
-    // Call the add_ability function in the Move contract
-    tx.moveCall({
-      target: `${PACKAGE_ID}::${MODULE_NAME}::add_ability`,
-      arguments: [
-        tx.object(resumeId), 
-        tx.pure.string(ability)
-      ],
-    })
+  // Call the add_ability function in the Move contract
+  tx.moveCall({
+    target: `${PACKAGE_ID}::${MODULE_NAME}::add_ability`,
+    arguments: [tx.object(resumeId), tx.pure.string(ability)],
+  })
 
-    // Execute the transaction
-    const {mutate: signAndExecute} = useSignAndExecuteTransaction();
-    const result = await signAndExecute({
-      transaction: tx
-    }, {
-      onSuccess: () => {
-        console.log("success!");
-      },
-      onError: (error) => {
-        console.log(error);
-      }
-    })
-
-    return result
-  } catch (error) {
-    console.error("Error adding ability:", error)
-    throw error
-  }
+  return tx
 }
 
 /**
- * Add experience to resume
- * @param signer Wallet signer
+ * Create a transaction for adding experience to resume
  * @param resumeId Resume object ID
  * @param experience Experience string
- * @returns Transaction response
+ * @returns Transaction object
  */
-export async function addExperience(resumeId: string, experience: string) {
-  try {
-    const tx = new Transaction()
+export function addExperienceTransaction(resumeId: string, experience: string): Transaction {
+  const tx = new Transaction()
 
-    // Call the add_experience function in the Move contract
-    tx.moveCall({
-      target: `${PACKAGE_ID}::${MODULE_NAME}::add_experience`,
-      arguments: [
-        tx.object(resumeId), 
-        tx.pure.string(experience)
-      ],
-    })
+  // Call the add_experience function in the Move contract
+  tx.moveCall({
+    target: `${PACKAGE_ID}::${MODULE_NAME}::add_experience`,
+    arguments: [tx.object(resumeId), tx.pure.string(experience)],
+  })
 
-    // Execute the transaction
-    const {mutate: signAndExecute} = useSignAndExecuteTransaction();
-    const result = await signAndExecute({
-      transaction: tx
-    }, {
-      onSuccess: () => {
-        console.log("success!");
-      },
-      onError: (error) => {
-        console.log(error);
-      }
-    })
-
-    return result
-  } catch (error) {
-    console.error("Error adding experience:", error)
-    throw error
-  }
+  return tx
 }
 
 /**
- * Add achievement to resume
- * @param signer Wallet signer
+ * Create a transaction for adding achievement to resume
  * @param resumeId Resume object ID
  * @param achievement Achievement string
- * @returns Transaction response
+ * @returns Transaction object
  */
-export async function addAchievement(resumeId: string,achievement: string) {
-  try {
-    const tx = new Transaction()
+export function addAchievementTransaction(resumeId: string, achievement: string): Transaction {
+  const tx = new Transaction()
 
-    // Call the add_achievement function in the Move contract
-    tx.moveCall({
-      target: `${PACKAGE_ID}::${MODULE_NAME}::add_achievement`,
-      arguments: [tx.object(resumeId), tx.pure.string(achievement)],
-    })
+  // Call the add_achievement function in the Move contract
+  tx.moveCall({
+    target: `${PACKAGE_ID}::${MODULE_NAME}::add_achievement`,
+    arguments: [tx.object(resumeId), tx.pure.string(achievement)],
+  })
 
-    // Execute the transaction
-    const {mutate: signAndExecute} = useSignAndExecuteTransaction();
-    const result = await signAndExecute({
-      transaction: tx
-    }, {
-      onSuccess: () => {
-        console.log("success!");
-      },
-      onError: (error) => {
-        console.log(error);
-      }
-    })
-
-    return result
-  } catch (error) {
-    console.error("Error adding achievement:", error)
-    throw error
-  }
+  return tx
 }

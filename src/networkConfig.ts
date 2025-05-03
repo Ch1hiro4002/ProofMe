@@ -6,8 +6,8 @@ const { networkConfig, useNetworkVariable, useNetworkVariables } =
   createNetworkConfig({
     testnet: {
       url: getFullnodeUrl("testnet"),
-      package: "0x05bd0be091095a6535056c3422d9d01d8502271d0ef1117d2e0dcd75def2c3e8",
-      ResumeManager: "0x9c91a30b960b05e40172accca86d5d76947b2cc437102cce851c95641a32bf5d"
+      package: "0x2347c0c0a38716eb4c674396770d040f9c23cedbf174956595d63ca28f72324e",
+      ResumeManager: "0x2edf76cb941ee26f5194db1f9bf022f289d403a992006697f94a61dbc8e611b3"
     }
   });
 
