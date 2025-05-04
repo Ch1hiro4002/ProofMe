@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "noEmitOnError": false, // 允许生成文件即使报错
+    "noEmitOnError": false, 
     "useDefineForClassFields": true,
     "lib": [
       "ES2020",
