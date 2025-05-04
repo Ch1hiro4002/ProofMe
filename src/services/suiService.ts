@@ -1,19 +1,13 @@
-/**
- * Sui Blockchain Service
- *
- * This service provides functions to interact with the Sui blockchain
- * specifically for the resume system contract.
- */
-
 import { Transaction } from "@mysten/sui/transactions"
 import { networkConfig, suiClient } from "../networkConfig"
+import type { Resume, ResumeState } from "../types/resume-types"
 
-// Contract address and module name from the deployed Move contract
+
 const PACKAGE_ID = networkConfig.testnet.package
 const MODULE_NAME = "resume"
 const RESUME_MANAGER_ID = networkConfig.testnet.ResumeManager
 
-// Type definitions matching the Move contract structure
+
 export interface ResumeBasicInfo {
   name: string
   avatarUrl?: string
@@ -23,18 +17,121 @@ export interface ResumeBasicInfo {
   number: string
 }
 
-export interface Resume {
-  id: string
-  owner: string
-  name: string
-  avatarUrl?: string
-  date: string
-  education: string
-  mail: string
-  number: string
-  ability: string[] | null
-  experiences: string[] | null
-  achievements: string[] | null
+/**
+ * 通过事件查询获取所有简历
+ */
+export async function queryResumeState(): Promise<ResumeState> {
+  console.log("开始通过事件查询获取所有简历")
+
+  // 创建初始状态
+  const state: ResumeState = {
+    resumes: [],
+  }
+
+  try {
+    // 1. 查询所有 ResumeCreated 事件
+    const resumeEvents = await suiClient.queryEvents({
+      query: {
+        MoveEventType: `${PACKAGE_ID}::${MODULE_NAME}::ResumeCreated`,
+      },
+      limit: 50, // 限制返回数量
+    })
+
+    console.log(`找到 ${resumeEvents.data.length} 个 ResumeCreated 事件`)
+
+    // 2. 从事件中提取简历ID和所有者
+    const resumeIds = new Map<string, string>() // Map<resumeId, owner>
+
+    for (const event of resumeEvents.data) {
+      try {
+        const eventData = event.parsedJson as any
+        if (eventData && eventData.resume && eventData.user) {
+          resumeIds.set(eventData.resume, eventData.user)
+        }
+      } catch (error) {
+        console.error("解析 ResumeCreated 事件失败:", error)
+      }
+    }
+
+    console.log(`提取了 ${resumeIds.size} 个简历ID`)
+
+    // 3. 获取每个简历对象的详细信息
+    for (const [resumeId, owner] of resumeIds.entries()) {
+      try {
+        // 获取简历对象
+        const { data: resumeObject } = await suiClient.getObject({
+          id: resumeId,
+          options: {
+            showContent: true,
+          },
+        })
+
+        if (resumeObject && resumeObject.content) {
+          const content = resumeObject.content as any
+          const fields = content.fields
+
+          if (fields) {
+            // 创建简历对象
+            const resume: Resume = {
+              id: resumeId,
+              owner: owner,
+              name: fields.name || "",
+              date: fields.date || "",
+              education: fields.education || "",
+              mail: fields.mail || "",
+              number: fields.number || "",
+              ability: fields.abilities || [],
+              experiences: parseExperiences(fields.experiences || []),
+              achievements: parseAchievements(fields.achievements || []),
+            }
+
+            // 尝试从本地存储获取头像URL
+            try {
+              const storedAvatarUrl = localStorage.getItem(`resume_avatar_url_${owner}`)
+              if (storedAvatarUrl) {
+                resume.avatarUrl = storedAvatarUrl
+              }
+            } catch (e) {
+              console.log("无法访问localStorage，可能是在服务器端运行")
+            }
+
+            // 添加到状态中
+            state.resumes.push(resume)
+          }
+        }
+      } catch (error) {
+        console.error(`获取简历 ${resumeId} 详细信息失败:`, error)
+      }
+    }
+
+    console.log(`总共获取到 ${state.resumes.length} 个简历`)
+    return state
+  } catch (error) {
+    console.error("查询简历状态失败:", error)
+    return state
+  }
+}
+
+// 解析经验数组
+function parseExperiences(experiences: any[]): string[] {
+  if (!experiences || !Array.isArray(experiences)) {
+    return []
+  }
+  return experiences.map((exp: any) => {
+    if (typeof exp === "string") return exp
+    return exp.experience || exp.toString()
+  })
+}
+
+// 解析成就数组
+function parseAchievements(achievements: any[]): string[] {
+  if (!achievements || !Array.isArray(achievements)) {
+    return []
+  }
+  return achievements.map((ach: any) => {
+    if (typeof ach === "string") return ach
+    return ach.achievement || ach.toString()
+  })
 }
 
 /**
@@ -44,20 +141,29 @@ export interface Resume {
  */
 export async function checkUserHasResume(address: string): Promise<boolean> {
   try {
-    // Query owned objects of type Resume
-    const { data: objects } = await suiClient.getOwnedObjects({
-      owner: address,
-      filter: {
-        StructType: `${PACKAGE_ID}::${MODULE_NAME}::Resume`,
+    // 查询该用户的 ResumeCreated 事件
+    const events = await suiClient.queryEvents({
+      query: {
+        MoveEventType: `${PACKAGE_ID}::${MODULE_NAME}::ResumeCreated`,
       },
-      options: {
-        showContent: true,
-      },
+      limit: 50,
     })
 
-    return objects.length > 0
+    // 检查事件中是否有该用户的简历
+    for (const event of events.data) {
+      try {
+        const eventData = event.parsedJson as any
+        if (eventData && eventData.user === address) {
+          return true
+        }
+      } catch (error) {
+        console.error("解析事件失败:", error)
+      }
+    }
+
+    return false
   } catch (error) {
-    console.error("Error checking if user has resume:", error)
+    console.error("检查用户是否有简历失败:", error)
     throw error
   }
 }
@@ -69,116 +175,78 @@ export async function checkUserHasResume(address: string): Promise<boolean> {
  */
 export async function getUserResume(address: string): Promise<Resume | null> {
   try {
-    // Query owned objects of type Resume
-    const { data: objects } = await suiClient.getOwnedObjects({
-      owner: address,
-      filter: {
-        StructType: `${PACKAGE_ID}::${MODULE_NAME}::Resume`,
+    // 查询该用户的 ResumeCreated 事件
+    const events = await suiClient.queryEvents({
+      query: {
+        MoveEventType: `${PACKAGE_ID}::${MODULE_NAME}::ResumeCreated`,
       },
-      options: {
-        showContent: true,
-        showDisplay: true,
-      },
+      limit: 50,
     })
 
-    if (objects.length === 0) {
-      return null
-    }
-
-    // Parse the resume data from the first found resume object
-    const resumeObject = objects[0]
-    const content = resumeObject.data?.content as any
-
-    if (!content || !content.fields) {
-      return null
-    }
-
-    // Extract and format the resume data based on the Move contract structure
-    const resumeData: Resume = {
-      id: resumeObject.data?.objectId || "",
-      owner: address,
-      name: content.fields.name || "",
-      date: content.fields.date || "",
-      education: content.fields.education || "",
-      mail: content.fields.mail || "",
-      number: content.fields.number || "",
-      ability: parseOptionVector(content.fields.ability),
-      experiences: parseOptionVector(content.fields.experiences),
-      achievements: parseOptionVector(content.fields.achievements),
-    }
-
-    return resumeData
-  } catch (error) {
-    console.error("Error getting user resume:", error)
-    throw error
-  }
-}
-
-/**
- * Helper function to parse Option<vector<String>> from Move
- */
-function parseOptionVector(field: any): string[] | null {
-  if (!field || !field.fields || !field.fields.vec || !field.fields.vec.fields || !field.fields.vec.fields.contents) {
-    return null
-  }
-
-  return field.fields.vec.fields.contents.map((item: any) => item)
-}
-
-/**
- * Get all resumes
- * @returns Array of all resumes
- */
-export async function getAllResumes(): Promise<Resume[]> {
-  try {
-    // Get all objects owned by the ResumeManager
-    const { data: objects } = await suiClient.getDynamicFields({
-      parentId: RESUME_MANAGER_ID,
-    })
-
-    const resumes: Resume[] = []
-
-    // Fetch each resume object
-    for (const obj of objects) {
+    // 查找该用户的简历ID
+    let resumeId = null
+    for (const event of events.data) {
       try {
-        const { data: resumeObject } = await suiClient.getObject({
-          id: obj.objectId,
-          options: {
-            showContent: true,
-            showDisplay: true,
-          },
-        })
-
-        if (resumeObject && resumeObject.content) {
-          const content = resumeObject.content as any
-          const fields = content.fields
-
-          if (fields) {
-            const resume: Resume = {
-              id: resumeObject.objectId,
-              owner: fields.owner,
-              name: fields.name,
-              date: fields.date,
-              education: fields.education,
-              mail: fields.mail,
-              number: fields.number,
-              ability: parseOptionVector(fields.ability),
-              experiences: parseOptionVector(fields.experiences),
-              achievements: parseOptionVector(fields.achievements),
-            }
-
-            resumes.push(resume)
-          }
+        const eventData = event.parsedJson as any
+        if (eventData && eventData.user === address) {
+          resumeId = eventData.resume
+          break
         }
       } catch (error) {
-        console.error(`Error fetching resume object ${obj.objectId}:`, error)
-        // Continue with the next object
+        console.error("解析事件失败:", error)
       }
     }
 
-    return resumes
+    if (!resumeId) {
+      return null
+    }
+
+    // 获取简历对象
+    const { data: resumeObject } = await suiClient.getObject({
+      id: resumeId,
+      options: {
+        showContent: true,
+      },
+    })
+
+    if (!resumeObject || !resumeObject.content) {
+      return null
+    }
+
+    const content = resumeObject.content as any
+    const fields = content.fields
+
+    if (!fields) {
+      return null
+    }
+
+    // 创建简历对象
+    const resume: Resume = {
+      id: resumeId,
+      owner: address,
+      name: fields.name || "",
+      date: fields.date || "",
+      education: fields.education || "",
+      mail: fields.mail || "",
+      number: fields.number || "",
+      ability: fields.abilities || [],
+      experiences: parseExperiences(fields.experiences || []),
+      achievements: parseAchievements(fields.achievements || []),
+    }
+
+    // 尝试从本地存储获取头像URL
+    try {
+      const storedAvatarUrl = localStorage.getItem(`resume_avatar_url_${address}`)
+      if (storedAvatarUrl) {
+        resume.avatarUrl = storedAvatarUrl
+      }
+    } catch (e) {
+      console.log("无法访问localStorage，可能是在服务器端运行")
+    }
+
+    return resume
   } catch (error) {
-    console.error("Error getting all resumes:", error)
+    console.error("获取用户简历失败:", error)
     throw error
   }
 }
@@ -192,14 +260,11 @@ export function createResumeTransaction(resumeInfo: ResumeBasicInfo): Transactio
   const tx = new Transaction()
 
   // Call the create_resume function in the Move contract
-  // 注意：已移除 avatarUrl 参数
   tx.moveCall({
     target: `${PACKAGE_ID}::${MODULE_NAME}::create_resume`,
     arguments: [
       tx.object(RESUME_MANAGER_ID),
       tx.pure.string(resumeInfo.name),
-      // 移除 avatarUrl 参数
-      // tx.pure.string(resumeInfo.avatarUrl || ""),
       tx.pure.string(resumeInfo.date),
       tx.pure.string(resumeInfo.education),
       tx.pure.string(resumeInfo.mail),

@@ -1,4 +1,5 @@
-// ProfilePage.tsx
+"use client"
+
 import { useState, useEffect } from "react"
 import { Link, useParams } from "react-router-dom"
 import { suiClient } from "../networkConfig"
@@ -41,7 +42,7 @@ const ExternalLinkIcon = () => (
 
 // Skeleton loader component
 const ProfileSkeleton = () => (
-  <div className="min-h-screen bg-white">
+  <div className="flex flex-col min-h-screen bg-white">
     <header className="header">
       <div className="container">
         <div className="header-content">
@@ -55,7 +56,7 @@ const ProfileSkeleton = () => (
       </div>
     </header>
 
-    <main className="container py-8">
+    <main className="container py-8 flex-grow">
       <div className="max-w-4xl mx-auto">
         <div className="card mb-8">
           <div className="bg-black p-8">
@@ -104,6 +105,12 @@ const ProfileSkeleton = () => (
         </div>
       </div>
     </main>
+
+    <footer className="footer">
+      <div className="container text-center">
+        <p className="text-gray-400">&copy; {new Date().getFullYear()} Sui简历系统 </p>
+      </div>
+    </footer>
   </div>
 )
 
@@ -112,6 +119,7 @@ const ProfilePage = () => {
   const [profile, setProfile] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState("ability")
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
 
   useEffect(() => {
     // Fetch resume data from blockchain
@@ -133,19 +141,47 @@ const ProfilePage = () => {
           const fields = content.fields
 
           if (fields) {
+            // 尝试从本地存储获取头像URL
+            try {
+              const storedAvatarUrl = localStorage.getItem(`resume_avatar_url_${fields.owner}`)
+              if (storedAvatarUrl) {
+                setAvatarUrl(storedAvatarUrl)
+              }
+            } catch (e) {
+              console.log("无法访问localStorage，可能是在服务器端运行")
+            }
+
+            // 解析abilities数组
+            let abilities: string[] = []
+            if (fields.abilities && Array.isArray(fields.abilities)) {
+              abilities = fields.abilities
+            }
+
+            // 解析experiences数组
+            let experiences: string[] = []
+            if (fields.experiences && Array.isArray(fields.experiences)) {
+              experiences = fields.experiences.map((exp: any) => exp.experience || exp)
+            }
+
+            // 解析achievements数组
+            let achievements: string[] = []
+            if (fields.achievements && Array.isArray(fields.achievements)) {
+              achievements = fields.achievements.map((ach: any) => ach.achievement || ach)
+            }
+
             // Format the resume data
             const resume = {
               id: resumeObject.objectId,
               owner: fields.owner,
               name: fields.name,
-              avatarUrl: fields.avatar_url,
               date: fields.date,
               education: fields.education,
               mail: fields.mail,
               number: fields.number,
-              ability: parseOptionVector(fields.ability),
-              experiences: parseOptionVector(fields.experiences),
-              achievements: parseOptionVector(fields.achievements),
+              ability: abilities,
+              experiences: experiences,
+              achievements: achievements,
+              avatarUrl: avatarUrl,
             }
 
             setProfile(resume)
@@ -161,16 +197,7 @@ const ProfilePage = () => {
     if (id) {
       fetchProfile()
     }
-  }, [id])
-
-  // Helper function to parse Option<vector<String>> from Move
-  function parseOptionVector(field: any): string[] | null {
-    if (!field || !field.fields || !field.fields.vec || !field.fields.vec.fields || !field.fields.vec.fields.contents) {
-      return null
-    }
-
-    return field.fields.vec.fields.contents.map((item: any) => item)
-  }
+  }, [id, avatarUrl])
 
   if (loading) {
     return <ProfileSkeleton />
@@ -178,18 +205,39 @@ const ProfilePage = () => {
 
   if (!profile) {
     return (
-      <div className="container mx-auto px-4 py-12 text-center">
-        <h2 className="text-2xl font-bold mb-4">简历未找到</h2>
-        <p className="text-gray-600 mb-6">无法找到ID为 {id} 的简历，该简历可能不存在或已被删除。</p>
-        <Link to="/">
-          <button className="btn btn-primary">返回首页</button>
-        </Link>
+      <div className="flex flex-col min-h-screen">
+        <header className="header">
+          <div className="container">
+            <div className="header-content">
+              <h1 className="logo">Sui简历系统</h1>
+              <Link to="/" className="btn btn-outline">
+                返回首页
+              </Link>
+            </div>
+          </div>
+        </header>
+
+        <main className="container py-12 flex-grow flex items-center justify-center">
+          <div className="text-center max-w-md mx-auto">
+            <h2 className="text-2xl font-bold mb-4">简历未找到</h2>
+            <p className="text-gray-600 mb-6">无法找到ID为 {id} 的简历，该简历可能不存在或已被删除。</p>
+            <Link to="/">
+              <button className="btn btn-primary">返回首页</button>
+            </Link>
+          </div>
+        </main>
+
+        <footer className="footer">
+          <div className="container text-center">
+            <p className="text-gray-400">&copy; {new Date().getFullYear()} Sui简历系统 | 黑客松MVP演示</p>
+          </div>
+        </footer>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="flex flex-col min-h-screen bg-white">
       <header className="header">
         <div className="container">
           <div className="header-content">
@@ -199,7 +247,7 @@ const ProfilePage = () => {
             </Link>
             <div className="flex items-center gap-2">
               <a
-                href={`https://explorer.sui.io/object/${profile.id}?network=devnet`}
+                href={`https://explorer.sui.io/object/${profile.id}?network=testnet`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-outline btn-sm"
@@ -212,16 +260,20 @@ const ProfilePage = () => {
         </div>
       </header>
 
-      <main className="container py-8">
+      <main className="container py-8 flex-grow">
         <div className="max-w-4xl mx-auto">
           {/* 个人资料卡 */}
           <div className="card mb-8">
             <div className="bg-black text-white p-8">
               <div className="flex flex-col md:flex-row gap-6 items-center md:items-start">
                 <img
-                  src={profile.avatarUrl || "/placeholder.svg"}
+                  src={profile.avatarUrl || "/placeholder.svg?height=200&width=200"}
                   alt={profile.name}
-                  className="h-32 w-32 rounded-full border-4 border-white"
+                  className="h-32 w-32 rounded-full border-4 border-white object-cover"
+                  onError={(e) => {
+                    // 如果头像加载失败，使用占位图
+                    ;(e.target as HTMLImageElement).src = "/placeholder.svg?height=200&width=200"
+                  }}
                 />
                 <div className="text-center md:text-left">
                   <h1 className="text-3xl font-bold mb-2">{profile.name}</h1>
@@ -293,7 +345,10 @@ const ProfilePage = () => {
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-600">暂无技能信息</p>
+                <div className="empty-state">
+                  <p className="empty-state-title">暂无技能信息</p>
+                  <p className="empty-state-description">该用户尚未添加任何技能信息</p>
+                </div>
               )}
             </div>
 
@@ -310,7 +365,10 @@ const ProfilePage = () => {
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-600">暂无工作经验信息</p>
+                <div className="empty-state">
+                  <p className="empty-state-title">暂无工作经验信息</p>
+                  <p className="empty-state-description">该用户尚未添加任何工作经验</p>
+                </div>
               )}
             </div>
 
@@ -327,7 +385,10 @@ const ProfilePage = () => {
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-600">暂无荣誉成就信息</p>
+                <div className="empty-state">
+                  <p className="empty-state-title">暂无荣誉成就信息</p>
+                  <p className="empty-state-description">该用户尚未添加任何荣誉成就</p>
+                </div>
               )}
             </div>
           </div>
@@ -340,7 +401,7 @@ const ProfilePage = () => {
             <div className="bg-white p-4 rounded border border-gray-200 font-mono text-sm break-all">{profile.id}</div>
             <div className="mt-4 flex justify-end">
               <a
-                href={`https://explorer.sui.io/object/${profile.id}?network=devnet`}
+                href={`https://explorer.sui.io/object/${profile.id}?network=testnet`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-outline btn-sm"

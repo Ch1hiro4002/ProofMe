@@ -7,19 +7,19 @@
  * using the Sui dApp Kit hooks.
  */
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useCurrentWallet, useCurrentAccount, useSignAndExecuteTransaction } from "@mysten/dapp-kit"
 import {
   checkUserHasResume,
   getUserResume,
-  getAllResumes,
+  queryResumeState,
   createResumeTransaction,
   addAbilityTransaction,
   addExperienceTransaction,
   addAchievementTransaction,
-  type Resume,
   type ResumeBasicInfo,
 } from "../services/suiService"
+import type { Resume } from "../types/resume-types"
 
 // 用于在本地存储中保存头像URL的键
 const AVATAR_URL_STORAGE_PREFIX = "resume_avatar_url_"
@@ -35,6 +35,26 @@ export function useSuiResume() {
   const [userResume, setUserResume] = useState<Resume | null>(null)
   const [allResumes, setAllResumes] = useState<Resume[]>([])
   const [error, setError] = useState<string | null>(null)
+
+  // 使用 useCallback 包装 refreshAllResumes 函数，避免不必要的重新创建
+  const refreshAllResumes = useCallback(async () => {
+    try {
+      setLoading(true)
+      setError(null)
+
+      // 通过事件查询获取所有简历
+      const state = await queryResumeState()
+      setAllResumes(state.resumes)
+
+      return state.resumes
+    } catch (err) {
+      console.error("刷新简历列表失败:", err)
+      setError("刷新简历列表失败")
+      return []
+    } finally {
+      setLoading(false)
+    }
+  }, [])
 
   // Check if user has a resume when wallet connection changes
   useEffect(() => {
@@ -67,7 +87,6 @@ export function useSuiResume() {
         }
       } catch (err) {
         console.error("Error checking resume:", err)
-        setError("Failed to check if you have a resume")
       } finally {
         setLoading(false)
       }
@@ -78,30 +97,8 @@ export function useSuiResume() {
 
   // Load all resumes
   useEffect(() => {
-    async function loadAllResumes() {
-      try {
-        setLoading(true)
-        const resumes = await getAllResumes()
-
-        // 尝试为每个简历从本地存储加载头像URL
-        for (const resume of resumes) {
-          const storedAvatarUrl = localStorage.getItem(`${AVATAR_URL_STORAGE_PREFIX}${resume.owner}`)
-          if (storedAvatarUrl) {
-            resume.avatarUrl = storedAvatarUrl
-          }
-        }
-
-        setAllResumes(resumes)
-      } catch (err) {
-        console.error("Error loading all resumes:", err)
-        setError("Failed to load resumes")
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    loadAllResumes()
-  }, [])
+    refreshAllResumes()
+  }, [refreshAllResumes])
 
   /**
    * 保存头像URL到本地存储
@@ -146,6 +143,8 @@ export function useSuiResume() {
         {
           onSuccess: () => {
             console.log("Resume created successfully!")
+            // 创建成功后立即刷新简历列表
+            setTimeout(() => refreshAllResumes(), 2000) // 延迟2秒，等待区块链确认
           },
           onError: (error) => {
             console.error("Error creating resume:", error)
@@ -199,6 +198,8 @@ export function useSuiResume() {
         {
           onSuccess: () => {
             console.log("Ability added successfully!")
+            // 添加成功后刷新简历列表
+            setTimeout(() => refreshAllResumes(), 2000) // 延迟2秒，等待区块链确认
           },
           onError: (error) => {
             console.error("Error adding ability:", error)
@@ -251,6 +252,8 @@ export function useSuiResume() {
         {
           onSuccess: () => {
             console.log("Experience added successfully!")
+            // 添加成功后刷新简历列表
+            setTimeout(() => refreshAllResumes(), 2000) // 延迟2秒，等待区块链确认
           },
           onError: (error) => {
             console.error("Error adding experience:", error)
@@ -303,6 +306,8 @@ export function useSuiResume() {
         {
           onSuccess: () => {
             console.log("Achievement added successfully!")
+            // 添加成功后刷新简历列表
+            setTimeout(() => refreshAllResumes(), 2000) // 延迟2秒，等待区块链确认
           },
           onError: (error) => {
             console.error("Error adding achievement:", error)
@@ -366,6 +371,7 @@ export function useSuiResume() {
     addAbility: handleAddAbility,
     addExperience: handleAddExperience,
     addAchievement: handleAddAchievement,
-    updateAvatarUrl, // 新增方法用于更新头像URL
+    updateAvatarUrl,
+    refreshAllResumes,
   }
 }

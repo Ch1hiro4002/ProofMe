@@ -67,7 +67,6 @@ const LoadingIcon = () => (
   </svg>
 )
 
-// 学历选项
 const EDUCATION_OPTIONS = ["高中", "大专", "本科", "硕士", "博士", "其他"]
 
 const CreateResumePage = () => {
@@ -85,10 +84,10 @@ const CreateResumePage = () => {
   // 基本信息表单状态
   const [basicInfo, setBasicInfo] = useState({
     name: "",
-    date: "", // birthdate
+    date: "", 
     education: "",
-    mail: "", // email
-    number: "", // phone
+    mail: "",
+    number: "", 
     avatarUrl: "",
   })
 
@@ -156,8 +155,6 @@ const CreateResumePage = () => {
     reader.readAsDataURL(file)
   }
 
-  // Update the uploadAvatarToWalrus function
-// 在 CreateResumePage.tsx 中
 const uploadAvatarToWalrus = async (file: File): Promise<string> => {
   try {
     // 使用修改后的 walrusService 上传文件
@@ -370,7 +367,7 @@ const uploadAvatarToWalrus = async (file: File): Promise<string> => {
         </div>
       </header>
 
-      <main className="container py-8">
+      <main className="min-h-screen container py-8">
         <div className="max-w-4xl mx-auto">
           {/* 通知 */}
           {notification && (
@@ -406,7 +403,7 @@ const uploadAvatarToWalrus = async (file: File): Promise<string> => {
                         name="name"
                         value={basicInfo.name}
                         onChange={handleBasicInfoChange}
-                        className="w-full p-3 border rounded"
+                        className="w-full p-4 border rounded"
                         required
                       />
                     </div>
@@ -421,7 +418,7 @@ const uploadAvatarToWalrus = async (file: File): Promise<string> => {
                         name="date"
                         value={basicInfo.date}
                         onChange={handleBasicInfoChange}
-                        className="w-full p-2 border rounded"
+                        className="w-full p-4 border rounded"
                         required
                       />
                     </div>
@@ -435,7 +432,7 @@ const uploadAvatarToWalrus = async (file: File): Promise<string> => {
                         name="education"
                         value={basicInfo.education}
                         onChange={handleBasicInfoChange}
-                        className="w-full p-2 border rounded"
+                        className="w-full p-4 border rounded"
                         required
                       >
                         <option value="">请选择</option>
@@ -457,7 +454,7 @@ const uploadAvatarToWalrus = async (file: File): Promise<string> => {
                         name="mail"
                         value={basicInfo.mail}
                         onChange={handleBasicInfoChange}
-                        className="w-full p-2 border rounded"
+                        className="w-full p-4 border rounded"
                         required
                       />
                     </div>
@@ -472,7 +469,7 @@ const uploadAvatarToWalrus = async (file: File): Promise<string> => {
                         name="number"
                         value={basicInfo.number}
                         onChange={handleBasicInfoChange}
-                        className="w-full p-2 border rounded"
+                        className="w-full p-4 border rounded"
                         required
                       />
                     </div>
@@ -580,7 +577,7 @@ const uploadAvatarToWalrus = async (file: File): Promise<string> => {
                         type="text"
                         value={abilityInput}
                         onChange={(e) => setAbilityInput(e.target.value)}
-                        className="w-full p-2 border rounded"
+                        className="w-full p-4 border rounded"
                         placeholder="例如：精通React开发，3年经验"
                         required
                       />
@@ -630,7 +627,7 @@ const uploadAvatarToWalrus = async (file: File): Promise<string> => {
                       <textarea
                         value={experienceInput}
                         onChange={(e) => setExperienceInput(e.target.value)}
-                        className="w-full p-2 border rounded"
+                        className="w-full p-4 border rounded"
                         rows={3}
                         placeholder="例如：2020年1月-2022年6月，ABC科技有限公司，前端开发工程师，负责公司核心产品的前端开发"
                         required
@@ -681,7 +678,7 @@ const uploadAvatarToWalrus = async (file: File): Promise<string> => {
                       <textarea
                         value={achievementInput}
                         onChange={(e) => setAchievementInput(e.target.value)}
-                        className="w-full p-2 border rounded"
+                        className="w-full p-4 border rounded"
                         rows={3}
                         placeholder="例如：2023年，获得Sui区块链开发者认证"
                         required
@@ -707,9 +704,9 @@ const uploadAvatarToWalrus = async (file: File): Promise<string> => {
         </div>
       </main>
 
-      <footer className="footer">
-        <div className="container text-center">
-          <p className="text-gray-400">&copy; {new Date().getFullYear()} Sui简历系统 | 黑客松MVP演示</p>
+      <footer className="footer mt-auto">
+        <div className="container">
+          <div className="footer-bottom">&copy; {new Date().getFullYear()} Sui简历系统</div>
         </div>
       </footer>
     </div>
