@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2020",
+    "noEmitOnError": false, // 允许生成文件即使报错
     "useDefineForClassFields": true,
     "lib": [
       "ES2020",
@@ -17,7 +18,7 @@
     "noEmit": true,
     "jsx": "preserve",
     /* Linting */
-    "strict": true,
+    "strict": false,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,

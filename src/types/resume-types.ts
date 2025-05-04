@@ -12,7 +12,7 @@ export type Resume = {
   experiences: ExperienceItem[] | null
   achievements: AchievementItem[] | null
   avatarUrl?: string
-  twitterUsername?: string // 添加Twitter用户名字段
+  twitterUsername?: string 
 }
 
 export type ExperienceItem = {

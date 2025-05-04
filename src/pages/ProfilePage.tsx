@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { Link, useParams } from "react-router-dom"
 import { suiClient } from "../networkConfig"
+import type { ExperienceItem, AchievementItem } from "../types/resume-types"
 
 // Icons
 const ArrowLeftIcon = () => (
@@ -37,6 +38,29 @@ const ExternalLinkIcon = () => (
     <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
     <polyline points="15 3 21 3 21 9"></polyline>
     <line x1="10" y1="14" x2="21" y2="3"></line>
+  </svg>
+)
+
+const CheckCircleIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+  </svg>
+)
+
+const TwitterIcon = ({ className }: { className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={className}>
+    <path d="M23.643 4.093c-.833.372-1.734.636-2.69.75a9.56 9.56 0 0 1-3.262-3.817 9.729 9.729 0 0 0 6.765 2.472c-.942-.56-1.985-.965-3.092-1.184a4.781 4.781 0 0 0-8.137 4.548c0 .362.05.71.14 1.041-3.983-.201-7.518-2.11-9.91-5.272a4.773 4.773 0 0 0-.646 2.385c0 1.648.829 3.09 2.093 3.952-.771-.025-1.499-.237-2.149-.601v.061a4.779 4.779 0 0 0 3.833 4.697c-.92.247-1.78.381-2.687.381-.173 0-.342-.01-.513-.01a4.779 4.779 0 0 0 4.463 3.311c-2.935 1.916-6.675 2.98-10.584 2.98-.693 0-1.372-.04-2.06-.116a13.636 13.636 0 0 0 24.754-14.759c.453-.764.707-1.547.887-2.333z" />
   </svg>
 )
 
@@ -108,7 +132,7 @@ const ProfileSkeleton = () => (
 
     <footer className="footer">
       <div className="container text-center">
-        <p className="text-gray-400">&copy; {new Date().getFullYear()} Sui简历系统 </p>
+        <p className="text-gray-400">&copy; {new Date().getFullYear()} Sui简历系统 | 黑客松MVP演示</p>
       </div>
     </footer>
   </div>
@@ -141,6 +165,8 @@ const ProfilePage = () => {
           const fields = content.fields
 
           if (fields) {
+            console.log("Resume fields:", fields)
+
             // 尝试从本地存储获取头像URL
             try {
               const storedAvatarUrl = localStorage.getItem(`resume_avatar_url_${fields.owner}`)
@@ -157,16 +183,42 @@ const ProfilePage = () => {
               abilities = fields.abilities
             }
 
-            // 解析experiences数组
-            let experiences: string[] = []
+            // 解析experiences数组 - 现在是复杂对象
+            let experiences: ExperienceItem[] = []
             if (fields.experiences && Array.isArray(fields.experiences)) {
-              experiences = fields.experiences.map((exp: any) => exp.experience || exp)
+              experiences = fields.experiences.map((exp: any) => {
+                // 检查是否已经是正确的格式
+                if (typeof exp === "object" && exp.fields) {
+                  return {
+                    experience: exp.fields.experience,
+                    verification: exp.fields.verification,
+                  }
+                }
+                // 兼容旧格式
+                return {
+                  experience: typeof exp === "string" ? exp : String(exp),
+                  verification: false,
+                }
+              })
             }
 
-            // 解析achievements数组
-            let achievements: string[] = []
+            // 解析achievements数组 - 现在是复杂对象
+            let achievements: AchievementItem[] = []
             if (fields.achievements && Array.isArray(fields.achievements)) {
-              achievements = fields.achievements.map((ach: any) => ach.achievement || ach)
+              achievements = fields.achievements.map((ach: any) => {
+                // 检查是否已经是正确的格式
+                if (typeof ach === "object" && ach.fields) {
+                  return {
+                    achievement: ach.fields.achievement,
+                    verification: ach.fields.verification,
+                  }
+                }
+                // 兼容旧格式
+                return {
+                  achievement: typeof ach === "string" ? ach : String(ach),
+                  verification: false,
+                }
+              })
             }
 
             // Format the resume data
@@ -182,6 +234,7 @@ const ProfilePage = () => {
               experiences: experiences,
               achievements: achievements,
               avatarUrl: avatarUrl,
+              twitterUsername: fields.twitterUsername, // 添加Twitter用户名
             }
 
             setProfile(resume)
@@ -295,6 +348,7 @@ const ProfilePage = () => {
                   <h3 className="font-semibold mb-3">出生日期</h3>
                   <p className="text-gray-600">{profile.date}</p>
                 </div>
+                {/* 添加Twitter信息，如果有的话 */}
                 <div>
                   <h3 className="font-semibold mb-3">联系方式</h3>
                   <div className="space-y-2">
@@ -306,6 +360,21 @@ const ProfilePage = () => {
                       <span className="text-gray-500">电话:</span>
                       <span>{profile.number}</span>
                     </div>
+
+                    {profile.twitterUsername && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-gray-500">Twitter:</span>
+                        <a
+                          href={`https://twitter.com/${profile.twitterUsername.replace("@", "")}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-500 hover:underline flex items-center gap-1"
+                        >
+                          <TwitterIcon className="h-4 w-4" />
+                          {profile.twitterUsername}
+                        </a>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -356,10 +425,20 @@ const ProfilePage = () => {
               <h3 className="text-xl font-bold mb-4">工作经验</h3>
               {profile.experiences && profile.experiences.length > 0 ? (
                 <div className="space-y-4">
-                  {profile.experiences.map((experience: string, index: number) => (
+                  {profile.experiences.map((exp: ExperienceItem, index: number) => (
                     <div key={index} className="card">
                       <div className="card-content">
-                        <p>{experience}</p>
+                        <div className="flex items-start gap-2">
+                          <div className="flex-grow">
+                            <p>{exp.experience}</p>
+                          </div>
+                          {exp.verification && (
+                            <div className="flex items-center text-green-600">
+                              <CheckCircleIcon />
+                              <span className="ml-1 text-sm">已验证</span>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -376,10 +455,20 @@ const ProfilePage = () => {
               <h3 className="text-xl font-bold mb-4">荣誉成就</h3>
               {profile.achievements && profile.achievements.length > 0 ? (
                 <div className="space-y-4">
-                  {profile.achievements.map((achievement: string, index: number) => (
+                  {profile.achievements.map((achievement: AchievementItem, index: number) => (
                     <div key={index} className="card">
                       <div className="card-content">
-                        <p>{achievement}</p>
+                        <div className="flex items-start gap-2">
+                          <div className="flex-grow">
+                            <p>{achievement.achievement}</p>
+                          </div>
+                          {achievement.verification && (
+                            <div className="flex items-center text-green-600">
+                              <CheckCircleIcon />
+                              <span className="ml-1 text-sm">已验证</span>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
                   ))}
