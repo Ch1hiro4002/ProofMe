@@ -70,28 +70,6 @@ npm install
 - **样式**：Tailwind CSS
 - **存储**：Walrus去中心化存储
 
-## 📁 项目结构
-
-\`\`\`
-sui-resume-system/
-├── public/                 # 静态资源
-├── src/
-│   ├── components/         # React组件
-│   ├── hooks/              # 自定义React Hooks
-│   ├── pages/              # 页面组件
-│   ├── services/           # 服务层（API交互）
-│   ├── types/              # TypeScript类型定义
-│   ├── App.tsx             # 应用入口组件
-│   ├── main.tsx            # 应用入口文件
-│   ├── index.css           # 全局样式
-│   └── networkConfig.ts    # 网络配置
-├── index.html              # HTML模板
-├── vite.config.ts          # Vite配置
-├── tsconfig.json           # TypeScript配置
-├── package.json            # 项目依赖
-└── README.md               # 项目说明
-\`\`\`
-
 ## 🔗 智能合约
 
 项目使用Sui Move智能合约来存储和管理简历数据。合约主要功能包括：
@@ -104,7 +82,21 @@ sui-resume-system/
 
 合约代码位于 `move/` 目录下
 
+## 📚 页面展示
 
+![./doc/images/ProofMe_01.jpg](./doc/images/ProofMe_01.png)
+
+![./doc/images/ProofMe_02.jpg](./doc/images/ProofMe_02.png)
+
+![./doc/images/ProofMe_03.jpg](./doc/images/ProofMe_03.png)
+
+![./doc/images/ProofMe_04.jpg](./doc/images/ProofMe_04.png)
+
+
+
+项目地址：https://ch1hiro.wal.app/
+
+演示视频：https://www.youtube.com/watch?v=P_8TxZt_8-Q
 
 ## 📞 联系方式
 
