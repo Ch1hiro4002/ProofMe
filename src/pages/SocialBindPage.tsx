@@ -69,18 +69,29 @@ const SocialBindPage = () => {
       // 2. 让用户用钱包签名这个挑战
       const messageToSign = `验证钱包所有权以绑定Twitter账户\n\n挑战码: ${challenge}\n地址: ${currentAccount?.address}\n时间戳: ${Date.now()}`
 
-      const signature = await signMessage({
-        message: new TextEncoder().encode(messageToSign),
-      })
+      // 使用 Promise 方式获取签名
+      let signature = ""
+      try {
+        // 调用签名方法
+        await signMessage({
+          message: new TextEncoder().encode(messageToSign),
+        })
 
-      // 3. 签名结果直接就是签名字符串
+        // 确保有签名结果
+        if (!signature) {
+          throw new Error("未能获取签名")
+        }
 
-      // 4. 准备重定向到Twitter OAuth页面
-      // 通常你需要先调用后端API获取OAuth URL
-      const twitterOAuthUrl = await getTwitterOAuthUrl(currentAccount?.address || "", challenge, signature)
+        // 4. 准备重定向到Twitter OAuth页面
+        const twitterOAuthUrl = await getTwitterOAuthUrl(currentAccount?.address || "", challenge, signature)
 
-      // 5. 重定向到Twitter授权页面
-      window.location.href = twitterOAuthUrl
+        // 5. 重定向到Twitter授权页面
+        window.location.href = twitterOAuthUrl
+      } catch (error) {
+        console.error("启动Twitter绑定流程失败:", error)
+        toast.error("启动绑定流程失败，请重试")
+        setIsLoading(false)
+      }
     } catch (error) {
       console.error("启动Twitter绑定流程失败:", error)
       toast.error("启动绑定流程失败，请重试")

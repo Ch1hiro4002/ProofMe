@@ -9,12 +9,13 @@ export type Resume = {
   mail: string
   number: string
   ability: string[] | null
-  experiences: ExperienceItem[] | null
-  achievements: AchievementItem[] | null
+  experiences: string[] | null // 修改为string[]以匹配实际使用
+  achievements: string[] | null // 修改为string[]以匹配实际使用
   avatarUrl?: string
-  twitterUsername?: string 
+  twitterUsername?: string // 添加Twitter用户名字段
 }
 
+// 这些类型仍然保留，但在当前实现中不直接用于Resume类型
 export type ExperienceItem = {
   experience: string
   verification: boolean

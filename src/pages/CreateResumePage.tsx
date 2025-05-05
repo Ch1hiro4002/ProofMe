@@ -1,5 +1,7 @@
+"use client"
+
 // CreateResumePage.tsx
-import React from "react"
+import type React from "react"
 import { useState, useEffect, useRef } from "react"
 import { useNavigate } from "react-router-dom"
 import { useCurrentWallet } from "@mysten/dapp-kit"
@@ -70,7 +72,7 @@ const LoadingIcon = () => (
 const EDUCATION_OPTIONS = ["高中", "大专", "本科", "硕士", "博士", "其他"]
 
 const CreateResumePage = () => {
-  const { connectionStatus } = useCurrentWallet();
+  const { connectionStatus } = useCurrentWallet()
   const { loading, hasResume, userResume, error, createResume, addAbility, addExperience, addAchievement } =
     useSuiResume()
   const navigate = useNavigate()
@@ -84,10 +86,10 @@ const CreateResumePage = () => {
   // 基本信息表单状态
   const [basicInfo, setBasicInfo] = useState({
     name: "",
-    date: "", 
+    date: "",
     education: "",
     mail: "",
-    number: "", 
+    number: "",
     avatarUrl: "",
   })
 
@@ -155,23 +157,23 @@ const CreateResumePage = () => {
     reader.readAsDataURL(file)
   }
 
-const uploadAvatarToWalrus = async (file: File): Promise<string> => {
-  try {
-    // 使用修改后的 walrusService 上传文件
-    const walrusUrl = await uploadFileToWalrus(file, false, 10);
-    console.log("Avatar uploaded to Walrus:", walrusUrl);
-    return walrusUrl;
-  } catch (error) {
-    console.error("上传头像失败:", error);
-    throw new Error("上传头像失败，请重试");
+  const uploadAvatarToWalrus = async (file: File): Promise<string> => {
+    try {
+      // 使用修改后的 walrusService 上传文件
+      const walrusUrl = await uploadFileToWalrus(file, false, 10)
+      console.log("Avatar uploaded to Walrus:", walrusUrl)
+      return walrusUrl
+    } catch (error) {
+      console.error("上传头像失败:", error)
+      throw new Error("上传头像失败，请重试")
+    }
   }
-};
 
   // 创建简历
   const handleCreateResume = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (connectionStatus === 'disconnected') {
+    if (connectionStatus === "disconnected") {
       showNotification("error", "请先连接钱包")
       return
     }
@@ -219,7 +221,7 @@ const uploadAvatarToWalrus = async (file: File): Promise<string> => {
   const handleAddAbility = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (connectionStatus === 'disconnected') {
+    if (connectionStatus === "disconnected") {
       showNotification("error", "请先连接钱包")
       return
     }
@@ -251,7 +253,7 @@ const uploadAvatarToWalrus = async (file: File): Promise<string> => {
   const handleAddExperience = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (connectionStatus === 'disconnected') {
+    if (connectionStatus === "disconnected") {
       showNotification("error", "请先连接钱包")
       return
     }
@@ -283,7 +285,7 @@ const uploadAvatarToWalrus = async (file: File): Promise<string> => {
   const handleAddAchievement = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (connectionStatus === 'disconnected') {
+    if (connectionStatus === "disconnected") {
       showNotification("error", "请先连接钱包")
       return
     }
@@ -322,7 +324,7 @@ const uploadAvatarToWalrus = async (file: File): Promise<string> => {
   }
 
   // 如果未连接钱包，显示提示
-  if (connectionStatus === 'disconnected') {
+  if (connectionStatus === "disconnected") {
     return (
       <div className="min-h-screen bg-white py-12">
         <div className="container mx-auto px-4">
@@ -610,7 +612,7 @@ const uploadAvatarToWalrus = async (file: File): Promise<string> => {
                       <div className="space-y-4">
                         {userResume.experiences.map((exp, index) => (
                           <div key={index} className="border rounded p-4">
-                            <p>{exp}</p>
+                            <p>{String(exp)}</p>
                           </div>
                         ))}
                       </div>
@@ -661,7 +663,7 @@ const uploadAvatarToWalrus = async (file: File): Promise<string> => {
                       <div className="space-y-4">
                         {userResume.achievements.map((achievement, index) => (
                           <div key={index} className="border rounded p-4">
-                            <p>{achievement}</p>
+                            <p>{String(achievement)}</p>
                           </div>
                         ))}
                       </div>
