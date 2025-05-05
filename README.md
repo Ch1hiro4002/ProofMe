@@ -1,106 +1,109 @@
-# ProofMeSui简历系统
+- # ProofMe - Sui Resume System
 
-<p align="center">
-  <img src="https://placeholder.svg?height=200&width=200&text=Sui简历系统" alt="Sui简历系统Logo"/>
-</p>
+  <p align="center">
+    <img src="https://placeholder.svg?height=200&width=200&text=Sui Resume System" alt="Sui Resume System Logo"/>
+  </p>
 
-<p align="center">
-  基于Sui区块链的去中心化简历平台
-</p>
+  <p align="center">
+    A decentralized resume platform based on Sui blockchain
+  </p>
 
-## 📖 项目介绍
+  <p align="center">
+    <a href="README_CN.md">中文</a> | <strong>English</strong>
+  </p>
 
-Sui简历系统是一个基于Sui区块链的去中心化简历平台，允许用户创建、管理和分享他们的职业简历，同时利用区块链技术确保数据的真实性和不可篡改性。用户可以添加技能、工作经验和成就，并通过社交账户绑定增强身份可信度。
+  ## 📖 Project Introduction
 
-### 核心特点
+  ProofMe is a decentralized resume platform based on Sui blockchain that allows users to create, manage, and share their professional resumes while leveraging blockchain technology to ensure data authenticity and immutability. Users can add skills, work experiences, and achievements, and enhance their identity credibility through social account binding.
 
-- **区块链存储**：简历数据存储在Sui区块链上，确保数据不可篡改
-- **去中心化身份**：用户通过钱包控制自己的数据，无需中心化账户
-- **社交验证**：支持绑定Twitter等社交账户，增强简历可信度
-- **混合存储策略**：文本数据存储在链上，图片等大文件存储在Walrus去中心化存储
-- **响应式设计**：适配各种设备尺寸，提供良好的移动端体验
+  ### Core Features
 
-## 🚀 快速开始
+  - **Blockchain Storage**: Resume data is stored on the Sui blockchain, ensuring data immutability
+  - **Decentralized Identity**: Users control their own data through wallets, no centralized accounts needed
+  - **Social Verification**: Support for binding Twitter and other social accounts to enhance resume credibility
+  - **Hybrid Storage Strategy**: Text data stored on-chain, large files like images stored on Walrus decentralized storage
+  - **Responsive Design**: Adapts to various device sizes, providing a good mobile experience
 
-### 前提条件
+  ## 🚀 Quick Start
 
-- Node.js 16+
-- npm 或 yarn
-- Sui钱包（如Sui Wallet浏览器扩展）
+  ### Prerequisites
 
-### 安装
+  - Node.js 16+
+  - npm or yarn
+  - Sui wallet (such as Sui Wallet browser extension)
 
-1. 克隆仓库
+  ### Installation
 
-\`\`\`bash
-git clone https://github.com/Ch1hiro4002/ProofMe.git
-cd ProofMe
-\`\`\`
+  1. Clone the repository
 
-2. 安装依赖
+  \`\`\`bash
+  git clone https://github.com/Ch1hiro4002/ProofMe.git
+  cd ProofMe
+  \`\`\`
 
-\`\`\`bash
-npm install
+  2. Install dependencies
 
-## 📚 功能说明
+  \`\`\`bash
+  npm install
+  \`\`\`
 
-### 1. 简历创建与管理
+  ## 📚 Features
 
-- **创建简历**：填写基本信息、上传头像
-- **添加技能**：添加个人技能和专长
-- **添加工作经验**：记录工作经历
-- **添加成就**：记录个人成就和证书
+  ### 1. Resume Creation and Management
 
-### 2. 社交账户绑定
+  - **Create Resume**: Fill in basic information, upload avatar
+  - **Add Skills**: Add personal skills and expertise
+  - **Add Work Experience**: Record work history
+  - **Add Achievements**: Record personal achievements and certificates
 
-- **Twitter绑定**：验证Twitter账户所有权
-- **身份验证**：增强简历可信度
+  ### 2. Social Account Binding
 
-### 3. 简历浏览与搜索
+  - **Twitter Binding**: Verify Twitter account ownership
+  - **Identity Verification**: Enhance resume credibility
 
-- **浏览简历**：查看平台上的简历
-- **搜索功能**：按技能、姓名等搜索简历
+  ### 3. Resume Browsing and Search
 
-## 💻 技术栈
+  - **Browse Resumes**: View resumes on the platform
+  - **Search Function**: Search resumes by skills, name, etc.
 
-- **前端框架**：React + TypeScript
-- **构建工具**：Vite
-- **区块链交互**：@mysten/dapp-kit, @mysten/sui
-- **路由**：React Router
-- **样式**：Tailwind CSS
-- **存储**：Walrus去中心化存储
+  ## 💻 Technology Stack
 
-## 🔗 智能合约
+  - **Frontend Framework**: React + TypeScript
+  - **Build Tool**: Vite
+  - **Blockchain Interaction**: @mysten/dapp-kit, @mysten/sui
+  - **Routing**: React Router
+  - **Styling**: Tailwind CSS
+  - **Storage**: Walrus decentralized storage
 
-项目使用Sui Move智能合约来存储和管理简历数据。合约主要功能包括：
+  ## 🔗 Smart Contract
 
-- 创建简历
-- 添加技能
-- 添加工作经验
-- 添加成就
-- 验证简历数据
+  The project uses Sui Move smart contracts to store and manage resume data. The main functions of the contract include:
 
-合约代码位于 `move/` 目录下
+  - Creating resumes
+  - Adding skills
+  - Adding work experiences
+  - Adding achievements
+  - Verifying resume data
 
-## 📚 页面展示
+  The contract code is located in the `move/` directory
 
-![./doc/images/ProofMe_01.jpg](./doc/images/ProofMe_01.png)
+  ## 📚 Page Display
 
-![./doc/images/ProofMe_02.jpg](./doc/images/ProofMe_02.png)
+  ![./doc/images/ProofMe_01.jpg](./doc/images/ProofMe_01.png)
 
-![./doc/images/ProofMe_03.jpg](./doc/images/ProofMe_03.png)
+  ![./doc/images/ProofMe_02.jpg](./doc/images/ProofMe_02.png)
 
-![./doc/images/ProofMe_04.jpg](./doc/images/ProofMe_04.png)
+  ![./doc/images/ProofMe_03.jpg](./doc/images/ProofMe_03.png)
 
+  ![./doc/images/ProofMe_04.jpg](./doc/images/ProofMe_04.png)
 
+  Project URL: https://ch1hiro.wal.app/
 
-项目地址：https://ch1hiro.wal.app/
+  Demo Video: https://www.youtube.com/watch?v=P_8TxZt_8-Q
 
-演示视频：https://www.youtube.com/watch?v=P_8TxZt_8-Q
+  ## 📞 Contact Information
 
-## 📞 联系方式
-
-- 项目维护者：Ch1hiro
-- 邮箱：ch1hiro4002@gmail.com
-- X：https://x.com/Ch1hiro4002
-- GitHub：https://github.com/Ch1hiro4002
+  - Project Maintainer: Ch1hiro
+  - Email: ch1hiro4002@gmail.com
+  - X: https://x.com/Ch1hiro4002
+  - GitHub: https://github.com/Ch1hiro4002
