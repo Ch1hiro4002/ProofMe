@@ -2,11 +2,9 @@ import { Transaction } from "@mysten/sui/transactions"
 import { networkConfig, suiClient } from "../networkConfig"
 import type { Resume, ResumeState } from "../types/resume-types"
 
-
 const PACKAGE_ID = networkConfig.testnet.package
 const MODULE_NAME = "resume"
 const RESUME_MANAGER_ID = networkConfig.testnet.ResumeManager
-
 
 export interface ResumeBasicInfo {
   name: string
@@ -83,16 +81,7 @@ export async function queryResumeState(): Promise<ResumeState> {
               ability: fields.abilities || [],
               experiences: parseExperiences(fields.experiences || []),
               achievements: parseAchievements(fields.achievements || []),
-            }
-
-            // 尝试从本地存储获取头像URL
-            try {
-              const storedAvatarUrl = localStorage.getItem(`resume_avatar_url_${owner}`)
-              if (storedAvatarUrl) {
-                resume.avatarUrl = storedAvatarUrl
-              }
-            } catch (e) {
-              console.log("无法访问localStorage，可能是在服务器端运行")
+              avatarUrl: fields.avatar || "", // 使用合约中的avatar字段
             }
 
             // 添加到状态中
@@ -232,16 +221,7 @@ export async function getUserResume(address: string): Promise<Resume | null> {
       ability: fields.abilities || [],
       experiences: parseExperiences(fields.experiences || []),
       achievements: parseAchievements(fields.achievements || []),
-    }
-
-    // 尝试从本地存储获取头像URL
-    try {
-      const storedAvatarUrl = localStorage.getItem(`resume_avatar_url_${address}`)
-      if (storedAvatarUrl) {
-        resume.avatarUrl = storedAvatarUrl
-      }
-    } catch (e) {
-      console.log("无法访问localStorage，可能是在服务器端运行")
+      avatarUrl: fields.avatar || "", // 使用合约中的avatar字段
     }
 
     return resume
@@ -269,6 +249,7 @@ export function createResumeTransaction(resumeInfo: ResumeBasicInfo): Transactio
       tx.pure.string(resumeInfo.education),
       tx.pure.string(resumeInfo.mail),
       tx.pure.string(resumeInfo.number),
+      tx.pure.string(resumeInfo.avatarUrl || ""), // 添加avatar参数
     ],
   })
 

@@ -143,7 +143,6 @@ const ProfilePage = () => {
   const [profile, setProfile] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState("ability")
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
 
   useEffect(() => {
     // Fetch resume data from blockchain
@@ -166,16 +165,6 @@ const ProfilePage = () => {
 
           if (fields) {
             console.log("Resume fields:", fields)
-
-            // 尝试从本地存储获取头像URL
-            try {
-              const storedAvatarUrl = localStorage.getItem(`resume_avatar_url_${fields.owner}`)
-              if (storedAvatarUrl) {
-                setAvatarUrl(storedAvatarUrl)
-              }
-            } catch (e) {
-              console.log("无法访问localStorage，可能是在服务器端运行")
-            }
 
             // 解析abilities数组
             let abilities: string[] = []
@@ -233,7 +222,7 @@ const ProfilePage = () => {
               ability: abilities,
               experiences: experiences,
               achievements: achievements,
-              avatarUrl: avatarUrl,
+              avatarUrl: fields.avatar || "", // 使用合约中的avatar字段
               twitterUsername: fields.twitterUsername, // 添加Twitter用户名
             }
 
@@ -250,7 +239,7 @@ const ProfilePage = () => {
     if (id) {
       fetchProfile()
     }
-  }, [id, avatarUrl])
+  }, [id])
 
   if (loading) {
     return <ProfileSkeleton />
@@ -325,6 +314,7 @@ const ProfilePage = () => {
                   className="h-32 w-32 rounded-full border-4 border-white object-cover"
                   onError={(e) => {
                     // 如果头像加载失败，使用占位图
+                    console.error("头像加载失败，使用占位图")
                     ;(e.target as HTMLImageElement).src = "/placeholder.svg?height=200&width=200"
                   }}
                 />

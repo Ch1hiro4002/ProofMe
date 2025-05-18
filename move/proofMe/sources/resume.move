@@ -17,6 +17,7 @@ module proofme::resume {
         education: String,
         mail: String,
         number: String,
+        avatar: String,
         abilities: vector<String>,
         experiences: vector<Experiences>,
         achievements: vector<Achievement>,
@@ -44,7 +45,8 @@ module proofme::resume {
         date: String,
         education: String,
         mail: String, 
-        number: String
+        number: String,
+        avatar: String
     }
 
     public struct AbilityAdded has copy, drop {
@@ -87,6 +89,7 @@ module proofme::resume {
         education: String, 
         mail: String, 
         number: String, 
+        avatar: String,
         ctx: &mut TxContext
     ) {
         let owner = tx_context::sender(ctx);
@@ -101,6 +104,7 @@ module proofme::resume {
             education: education,
             mail: mail,
             number: number,
+            avatar: avatar,
             abilities: vector::empty(),
             experiences: vector::empty(),
             achievements: vector::empty()
@@ -115,7 +119,8 @@ module proofme::resume {
             date: date,
             education: education,
             mail: mail, 
-            number: number
+            number: number,
+            avatar: avatar
         });
 
         transfer::transfer(resume, owner);

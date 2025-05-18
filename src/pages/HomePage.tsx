@@ -144,7 +144,6 @@ const HomePage = () => {
 
               {/* 添加社交绑定按钮 */}
               {connectionStatus === "connected" && <SocialBindButton className="btn btn-primary" />}
-
             </div>
           </div>
         </div>
@@ -157,8 +156,7 @@ const HomePage = () => {
             <p className="text-gray-600 mb-6">在区块链上安全存储您的职业档案，完全由您控制，永久保存且防篡改</p>
             <div className="flex max-w-md mx-auto">
               <div className="relative flex-1">
-                <div className="absolute left-2 top-2 text-gray-500">
-                </div>
+                <div className="absolute left-2 top-2 text-gray-500"></div>
                 <input
                   type="search"
                   placeholder="搜索技能、职位或姓名..."
@@ -205,6 +203,10 @@ const HomePage = () => {
                           src={resume.avatarUrl || "/placeholder.svg?height=64&width=64"}
                           alt={resume.name}
                           className="avatar avatar-medium"
+                          onError={(e) => {
+                            console.error("头像加载失败，使用占位图")
+                            ;(e.target as HTMLImageElement).src = "/placeholder.svg?height=64&width=64"
+                          }}
                         />
                         <div className="text-center md:text-left">
                           <h4 className="font-bold text-lg">{resume.name}</h4>

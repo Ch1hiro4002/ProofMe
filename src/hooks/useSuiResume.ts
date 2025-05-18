@@ -21,9 +21,6 @@ import {
 } from "../services/suiService"
 import type { Resume } from "../types/resume-types"
 
-// 用于在本地存储中保存头像URL的键
-const AVATAR_URL_STORAGE_PREFIX = "resume_avatar_url_"
-
 export function useSuiResume() {
   const { connectionStatus } = useCurrentWallet()
   const account = useCurrentAccount()
@@ -75,13 +72,7 @@ export function useSuiResume() {
 
         if (hasResumeResult) {
           const resume = await getUserResume(account.address)
-
-          // 如果有简历，尝试从本地存储获取头像URL
           if (resume) {
-            const storedAvatarUrl = localStorage.getItem(`${AVATAR_URL_STORAGE_PREFIX}${account.address}`)
-            if (storedAvatarUrl) {
-              resume.avatarUrl = storedAvatarUrl
-            }
             setUserResume(resume)
           }
         }
@@ -101,19 +92,6 @@ export function useSuiResume() {
   }, [refreshAllResumes])
 
   /**
-   * 保存头像URL到本地存储
-   * @param address 用户地址
-   * @param avatarUrl 头像URL
-   */
-  const saveAvatarUrlToLocalStorage = (address: string, avatarUrl: string) => {
-    try {
-      localStorage.setItem(`${AVATAR_URL_STORAGE_PREFIX}${address}`, avatarUrl)
-    } catch (error) {
-      console.error("Error saving avatar URL to local storage:", error)
-    }
-  }
-
-  /**
    * Create a new resume
    * @param basicInfo Basic resume information
    * @returns Transaction result
@@ -127,12 +105,7 @@ export function useSuiResume() {
       setLoading(true)
       setError(null)
 
-      // 保存头像URL到本地存储（如果有）
-      if (basicInfo.avatarUrl) {
-        saveAvatarUrlToLocalStorage(account.address, basicInfo.avatarUrl)
-      }
-
-      // 创建不包含avatarUrl的交易
+      // 创建交易
       const transaction = createResumeTransaction(basicInfo)
 
       // 使用 hook 签名并执行交易
@@ -345,9 +318,6 @@ export function useSuiResume() {
     }
 
     try {
-      // 保存到本地存储
-      saveAvatarUrlToLocalStorage(account.address, avatarUrl)
-
       // 更新当前简历对象
       setUserResume({
         ...userResume,

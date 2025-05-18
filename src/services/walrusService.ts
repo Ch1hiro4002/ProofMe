@@ -16,7 +16,7 @@ const AGGREGATOR_URL = "https://aggregator.walrus-testnet.walrus.space/v1/blobs"
  * @param epochs Number of epochs to store the file
  * @returns URL of the uploaded file or Data URL as fallback
  */
-export async function uploadFileToWalrus(file: File, deletable = false, epochs = 10): Promise<string> {
+export async function uploadFileToWalrus(file: File, deletable = false, epochs = 1): Promise<string> {
   try {
     console.log(`开始上传文件到 Walrus，文件类型: ${file.type}, 文件大小: ${file.size} 字节`)
 
