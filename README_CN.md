@@ -36,17 +36,11 @@ ProofMe是一个基于Sui区块链的去中心化简历平台，允许用户创�
 ### 安装
 
 1. 克隆仓库
-
-\`\`\`bash
-git clone https://github.com/Ch1hiro4002/ProofMe.git
-cd ProofMe
-\`\`\`
+   `git clone https://github.com/Ch1hiro4002/ProofMe.git`
+   `cd ProofMe`
 
 2. 安装依赖
-
-\`\`\`bash
-npm install
-\`\`\`
+   `npm install`
 
 ## 📚 功能说明
 

@@ -38,17 +38,11 @@
   ### Installation
   
   1. Clone the repository
-  
-  \`\`\`bash
-  git clone https://github.com/Ch1hiro4002/ProofMe.git
-  cd ProofMe
-  \`\`\`
-  
+     `git clone https://github.com/Ch1hiro4002/ProofMe.git`
+     `cd ProofMe`
+
   2. Install dependencies
-  
-  \`\`\`bash
-  npm install
-  \`\`\`
+     `npm install`
   
   ## 📚 Features
   
@@ -60,15 +54,15 @@
   - **Add Achievements**: Record personal achievements and certificates
   
   ### 2. Social Account Binding
-
+  
   - **Twitter Binding**: Verify Twitter account ownership
   - **Identity Verification**: Enhance resume credibility
-  
-  ### 3. Resume Browsing and Search
 
+  ### 3. Resume Browsing and Search
+  
   - **Browse Resumes**: View resumes on the platform
   - **Search Function**: Search resumes by skills, name, etc.
-  
+
   ## 💻 Technology Stack
   
   - **Frontend Framework**: React + TypeScript
