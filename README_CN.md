@@ -1,8 +1,9 @@
 # ProofMe - Sui简历系统
 
 <p align="center">
-  <img src="https://placeholder.svg?height=200&width=200&text=Sui简历系统" alt="Sui简历系统Logo"/>
+  <img src="./src/assets/logo.png" alt="Sui Resume System Logo" width="200" height="200"/>
 </p>
+
 
 <p align="center">
   基于Sui区块链的去中心化简历平台
@@ -97,7 +98,7 @@ npm install
 
 ![./doc/images/ProofMe_04.jpg](./doc/images/ProofMe_04.png)
 
-项目地址：https://ch1hiro.wal.app/
+项目地址：https://codeboy.wal.app/
 
 演示视频：https://www.youtube.com/watch?v=P_8TxZt_8-Q
 

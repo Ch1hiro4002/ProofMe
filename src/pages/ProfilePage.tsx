@@ -289,7 +289,7 @@ const ProfilePage = () => {
             </Link>
             <div className="flex items-center gap-2">
               <a
-                href={`https://explorer.sui.io/object/${profile.id}?network=testnet`}
+                href={`https://testnet.suivision.xyz/object/${profile.id}?network=testnet`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-outline btn-sm"
@@ -480,7 +480,7 @@ const ProfilePage = () => {
             <div className="bg-white p-4 rounded border border-gray-200 font-mono text-sm break-all">{profile.id}</div>
             <div className="mt-4 flex justify-end">
               <a
-                href={`https://explorer.sui.io/object/${profile.id}?network=testnet`}
+                href={`https://testnet.suivision.xyz/object/${profile.id}?network=testnet`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-outline btn-sm"
