@@ -96,6 +96,8 @@ ProofMe是一个基于Sui区块链的去中心化简历平台，允许用户创�
 
 演示视频：https://www.youtube.com/watch?v=P_8TxZt_8-Q
 
+PPT：https://docs.google.com/presentation/d/1TNqZKIdmloyHpnHflCcmKCa8gMBc6Y4GHNqU4Yj4k_0/edit?usp=sharing
+
 ## 📞 联系方式
 
 - 项目维护者：Ch1hiro

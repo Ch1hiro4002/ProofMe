@@ -100,6 +100,8 @@
   
   Demo Video: https://www.youtube.com/watch?v=P_8TxZt_8-Q
   
+  PPT：https://docs.google.com/presentation/d/1TNqZKIdmloyHpnHflCcmKCa8gMBc6Y4GHNqU4Yj4k_0/edit?usp=sharing
+  
   ## 📞 Contact Information
   
   - Project Maintainer: Ch1hiro
